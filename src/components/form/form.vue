@@ -152,7 +152,7 @@
     <!-- 领域 -->
       <BlockBox :blockTitle='`领域`'>
         <el-form-item label="主打领域" prop="main_area">
-            <el-select v-model="form.main_area" multiple placeholder="请选择主打领域" :disabled="form.juid>0">
+            <el-select v-model="form.main_area" multiple placeholder="请选择主打领域">
                 <el-option
                     v-for="item in areaOptions"
                     :key="item.value"
@@ -368,22 +368,23 @@ import { provinceAndCityData, CodeToText, TextToCode } from 'element-china-area-
 import WinHistory from 'components/win-history/win-history'
 import BlogList from 'components/blog-list/blog-list'
 import qs from 'qs'
+
 //平台信息
-const PLATFORM_ITEM = {
+const platform_item = () => ({
     platform: [],
     username: '',
     fans: '',
     media_price: '',
     jiguo_discount: ''
-}
+})
 //能力信息
-const CONTENT_ITEM = {
+const content_item = () => ({
     title: '',
     en_title: '',
     content: ''
-}
+})
 //其他信息
-const BLOCK_BOX_CONTENT = {
+const block_box_content = () => ({
     title: '',
     content: [{
         title: '',
@@ -398,13 +399,13 @@ const BLOCK_BOX_CONTENT = {
         en_title: '',
         content: ''
     }]
-}
+})
 //其他信息子选项
-const C_ITEM = {
+const c_item = () => ({
     title: '',
     en_title: '',
     content: ''
-}
+})
 export default {
     props: {
         formData: {
@@ -564,10 +565,6 @@ export default {
                         {
                             value: 'YY',
                             label: 'YY'
-                        },
-                        {
-                            value: '秒拍',
-                            label: '秒拍'
                         },
                         {
                             value: '其他',
@@ -744,6 +741,7 @@ export default {
                     if (res.resultCode === "0") {
                         this.$message.success(res.errorMsg)
                         this.form.juid = value
+                        this.form.main_area = res.result.main_area
                         this.uidInfo = res.result
                     } else {
                         this.$message.error(res.errorMsg)
@@ -769,13 +767,13 @@ export default {
             this.form.influence[index].child_platform = platform[1]
         },
         addPlatform () {
-            this.form.influence.push(PLATFORM_ITEM)
+            this.form.influence.push(platform_item())
         },
         delItem (content, index) {
             content.splice(index, 1)
         },
         addItem (content) {
-            content.push(CONTENT_ITEM)
+            content.push(content_item())
         },
         delBlockBox (i) {
             this.form.other.splice(i, 1)
@@ -784,10 +782,10 @@ export default {
             this.form.other[i].content.splice(j, 1)
         },
         addBlockBox () {
-            this.form.other.push(BLOCK_BOX_CONTENT)
+            this.form.other.push(block_box_content())
         },
         addCItem (i) {
-            this.form.other[i].content.push(C_ITEM)
+            this.form.other[i].content.push(c_item())
         },
         changeWinHistory (data) {
             this.winHistoryShow = data.winHistoryShow

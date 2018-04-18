@@ -13,7 +13,7 @@ import Form from 'components/form/form'
 export default {
   data() {
     return {
-      titleText: '新建商业体验师',
+      titleText: '新建体验师',
       formData: {
         username: '',
         sex: '',
