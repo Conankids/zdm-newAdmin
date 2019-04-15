@@ -1,4 +1,4 @@
-# demo
+# 使用vue构建的多页面应用
 
 > A Vue.js project
 
