@@ -259,13 +259,13 @@
           <el-row>
               <el-col :span='24'>
                   <div class="item-name">子女信息：</div>
-                  <div class="item-content">{{userData.home.home_has_child==0?'没有':'有'}}<span class="ml10">{{userData.home.child_info}}</span></div>
+                  <div class="item-content">{{userData.home.home_has_child==1?'没有':'有'}}<span class="ml10">{{userData.home.child_info}}</span></div>
               </el-col>
           </el-row>
           <el-row>
               <el-col :span='24'>
                   <div class="item-name">宠物信息：</div>
-                  <div class="item-content">{{userData.home.home_has_pet==0?'没有':'有'}}<span class="ml10">{{userData.home.pet_info}}</span></div>
+                  <div class="item-content">{{userData.home.home_has_pet==1?'没有':'有'}}<span class="ml10">{{userData.home.pet_info}}</span></div>
               </el-col>
           </el-row>
       </BlockBox>
