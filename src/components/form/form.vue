@@ -709,6 +709,7 @@ export default {
                 }
                 areaData.push(areaItem)
             }
+            console.log(areaData);
             this.areaOptions = areaData
         },
         initFormData () {
@@ -796,6 +797,7 @@ export default {
         submitForm (formName) {
             this.$refs[formName].validate((valid) => {
                 if (valid) {
+                    console.log(qs.stringify(this.form));
                     this.$http({
                         method: 'post',
                         url: '/admin/vip/InsertUser',

@@ -14,6 +14,6 @@ module.exports = {
       target: 'http://zdm.jiguo.com',
       secure: true,
       changeOrigin: true
-    }
+    },
   }
 }

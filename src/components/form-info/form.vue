@@ -1,7 +1,19 @@
 <template>
   <el-form :inline="true" :rules="rules" :label-position="labelPosition" ref="form" :model="form" label-width="100px" v-if="form.content">
+      <el-button @click="text()">测试数据</el-button>
       <!-- 基本信息 -->
       <BlockBox :blockTitle='`基本信息`'>
+
+            <el-form-item label="测试数据">
+                <el-cascader
+                    expand-trigger="hover"
+                    :options="platformText"
+                    v-model="theMath"
+                    style="width:260px;"
+                    @change="handleChange">
+                </el-cascader>
+            </el-form-item>
+
             <el-form-item label="姓名" prop="username">
                 <el-input v-model="form.username" placeholder="请输入姓名" style="width:260px;"></el-input>
             </el-form-item>
@@ -37,7 +49,12 @@
              <el-form-item label="微信" prop="weixin">
                 <el-input v-model="form.weixin" placeholder="请输入你的微信号" style="width:260px;"></el-input>
             </el-form-item>
-
+            <el-form-item label="体验师类型" prop="vip_type">
+                    <el-select v-model="form.vip_type" placeholder="选择体验师类型" style="width:260px;">
+                        <el-option label="首席体验师" value="2"></el-option>
+                        <el-option label="见习体验师" value="3"></el-option>
+                    </el-select>
+            </el-form-item>
             <el-form-item label="个人介绍" prop="introduction">
                 <el-input type="textarea" :rows='3' v-model="form.introduction" placeholder="请输入个人介绍" style="width:708px;"></el-input>
             </el-form-item>
@@ -47,20 +64,20 @@
         <el-form-item label="主打领域" prop="main_area">
             <el-select v-model="form.main_area" multiple placeholder="请选择主打领域">
                 <el-option
-                    v-for="item in areaOptions"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value">
+                   v-for="item in initAllArea"
+                    :key="item.area_id"
+                    :label="item.area_name"
+                    :value="item.area_name">
                 </el-option>
             </el-select>
         </el-form-item>
         <el-form-item label="跨界领域">
             <el-select v-model="form.minor_area" multiple placeholder="请选择跨界领域">
                 <el-option
-                    v-for="item in areaOptions"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value">
+                    v-for="item in initAllArea"
+                    :key="item.area_id"
+                    :label="item.area_name"
+                    :value="item.area_name">
                 </el-option>
             </el-select>
         </el-form-item>
@@ -78,6 +95,7 @@
                     @change="platformChange(index)">
                 </el-cascader>
             </el-form-item>
+           
             <el-form-item label="地址/账号名">
                 <el-input v-model="item.address" placeholder="请输入地址/账号名" style="width:260px;"></el-input>
             </el-form-item>
@@ -90,7 +108,7 @@
             <a class="del-platform-btn icon-del" href="javascript:;" v-if="index>0" @click="delItem(form.influence,index)"></a>
         </div>
         <div class="add-platform blue tc cp">
-            <span class="icon-add" @click="addPlatform">添加平台信息</span>
+            <span class="icon-add" @click="addPlatform()">添加平台信息</span>
         </div>
     </BlockBox>
 
@@ -233,16 +251,16 @@
 
     </BlockBox>
       <div class="tc sub-box">
-            <el-button type="primary" @click="submitForm('form')">提交</el-button>
+            <!-- <el-button type="primary" @click="submitForm('form')">提交</el-button> -->
       </div> 
     <div class="footer">
      <div class="footer-sub">
-    <el-button style="width:180px;">提交</el-button>
+    <el-button style="width:180px;" type="primary" @click="submitForm('form')">提交</el-button>
     </div>
 
     <div class="footer-other">
-    <el-button  style="width:180px;">打回到体验师审核</el-button>
-    <el-button style="margin-left:20px;width:180px">通过入库</el-button>
+    <el-button  style="width:180px;" type="primary">打回到体验师审核</el-button>
+    <el-button style="margin-left:20px;width:180px" type="primary">通过入库</el-button>
     </div>
     </div>
   </el-form>
@@ -305,6 +323,11 @@ export default {
     },
     data () {
         return {
+            //平台测试数据
+            platformText:[],
+            theMath:[],
+            //所有的领域数据
+            initAllArea:[],
             img_preview_list: [],
             labelPosition: 'left',
             rules: {
@@ -330,7 +353,6 @@ export default {
                     trigger: 'blur'
                 }],
                 position:[{
-                    type: 'array',
                     required: true,
                     message: '请至少选择一个职位',
                     trigger: 'change'
@@ -348,6 +370,11 @@ export default {
                 introduction:[{
                     required: true,
                     message: '请输入个人介绍',
+                    trigger: 'blur'
+                }],
+                vip_type:[{
+                    required: true,
+                    message: '请选择体验师类型',
                     trigger: 'blur'
                 }],
             },
@@ -477,7 +504,6 @@ export default {
                     ]
                 }
             ],
-            areaOptions: null,
             contentOptions: [
                 {
                     value: '优秀',
@@ -558,28 +584,95 @@ export default {
         }
     },
     created () {
-        this.initAreaOptions()
         this.initFormData()
+        //获取平台所有信息方法
+        this.GetAllPlaform()
+        //获取主打领域所有信息方法
+         this.GetAllArea()
     },
     methods: {
-        initAreaOptions () {
-            const areaData = []
-            for (var i in window.areaOptionsData) {
-                const areaItem = {
-                    value: window.areaOptionsData[i],
-                    label: window.areaOptionsData[i]
-                }
-                areaData.push(areaItem)
-            }
-            this.areaOptions = areaData
+        //测试数据
+        text(){
+         console.log(this.form.main_area);
         },
+        handleChange(value) {
+        console.log(value);
+        },
+        //获取平台所有信息方法
+        GetAllPlaform(){
+            this.$http({
+                method: 'get',
+                url: '/admin/vip/GetAllPlaform',
+            })
+            .then((res)=>{
+            //   console.log(res);
+              console.log(res.data.result);
+                 this.platformText=res.data.result;
+            //   this.InfluenceOptions=res.data.result;
+            })
+        },
+        //获取主打领域所有信息方法
+         GetAllArea(){
+            this.$http({
+                method: 'get',
+                url: '/admin/vip/GetAllArea',
+            })
+            .then((res)=>{
+            // console.log(res.data.result);
+            this.initAllArea=res.data.result;
+            })
+        },
+        // 打回到体验师审核
+         SubmitToVipCheck(){
+            this.$http({
+                method: 'get',
+                url: '/admin/vip/SubmitToVipCheck',
+            })
+            .then((res)=>{
+            console.log(res.data.result);
+            })
+        },
+        //编辑体验师信息
+         EditVipUserInfo(){
+            this.$http({
+                method: 'post',
+                url: '/admin/vip/EditVipUserInfo',
+                 headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                            'Accept': 'application/json'
+                        },
+                        // data: qs.stringify(this.form)
+            })
+            .then((res)=>{
+            console.log(res.data.result);
+            })
+        },
+        //通过入库
+         PassEditVipUserInfo(){
+            this.$http({
+                method: 'post',
+                url: '/admin/vip/PassEditVipUserInfo',
+                 headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                            'Accept': 'application/json'
+                        },
+                        // data: qs.stringify(this.form)
+            })
+            .then((res)=>{
+            console.log(res.data.result);
+            })
+        },
+
         initFormData () {
             this.form = this.formData
         },
         platformChange (index) {
             const platform = [...this.platform[index]]
+            console.log(this.platform[index]);
+            console.log(platform);
             this.form.influence[index].parent_platform = platform[0]
             this.form.influence[index].child_platform = platform[1]
+            console.log(this.form.influence);
         },
         addPlatform () {
             this.form.influence.push(platform_item())
@@ -620,16 +713,6 @@ export default {
                     }).catch(error => {
                         console.log('网络错误，不能访问')
                     })
-                } else {
-                    if (this.form.username === '') {
-                        this.$message.error('请输入姓名')
-                        return false
-                    }
-                    if (this.form.main_area.length === 0) {
-                        this.$message.error('请至少选择一个主打领域')
-                        return false
-                    }
-                    console.log(valid);
                 }
             })
         }

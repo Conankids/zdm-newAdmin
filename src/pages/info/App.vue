@@ -23,10 +23,10 @@ export default {
         company: '',
         position: '',
         introduction: '',
-        user_img: [],
         tel: '',
         weixin: '',
         address: '',
+        vip_type:'',
         influence: [
           {
             parent_platform: '',
@@ -36,7 +36,9 @@ export default {
             media_price: '',
           }
         ],
+        //主打领域
         main_area: [],
+        //跨界领域
         minor_area: [],
         content: [{
           title: '文字能力',
