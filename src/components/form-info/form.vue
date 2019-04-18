@@ -1,31 +1,22 @@
 <template>
-  <el-form :inline="true" :rules="rules" :label-position="labelPosition" ref="form" :model="form" label-width="100px" v-if="form.content">
-      <el-button @click="text()">测试数据</el-button>
+<div>
+    <el-button @click="text()">测试文件</el-button>
+  <el-form :inline="true" :rules="rules" :label-position="labelPosition" ref="form" :model="form" label-width="100px">
+      <!-- <el-button @click="text()">测试数据</el-button> -->
       <!-- 基本信息 -->
       <BlockBox :blockTitle='`基本信息`'>
-
-            <el-form-item label="测试数据">
-                <el-cascader
-                    expand-trigger="hover"
-                    :options="platformText"
-                    v-model="theMath"
-                    style="width:260px;"
-                    @change="handleChange">
-                </el-cascader>
-            </el-form-item>
-
             <el-form-item label="姓名" prop="username">
                 <el-input v-model="form.username" placeholder="请输入姓名" style="width:260px;"></el-input>
             </el-form-item>
             <el-form-item label="性别">
                 <el-select v-model="form.sex" placeholder="请选择性别" style="width:260px;">
-                    <el-option label="男" value="2"></el-option>
-                    <el-option label="女" value="1"></el-option>
-                    <el-option label="暂无" value="0"></el-option>
+                    <el-option label="暂无" value="0">暂无</el-option>
+                    <el-option label="女" value="1">女</el-option>                    
+                    <el-option label="男" value="2">男</el-option>
                 </el-select>
             </el-form-item>
-            <el-form-item label="出生日期" prop="userage">
-                <el-date-picker type="date" placeholder="选择日期" v-model="form.birthday" style="width:260px;"></el-date-picker>
+            <el-form-item label="出生日期" prop="birthday">
+                <el-date-picker type="date" placeholder="选择日期" v-model="form.birthday" @change="getBirthday" style="width:260px;"></el-date-picker>
             </el-form-item>
                 
              <el-form-item label="年龄">
@@ -46,7 +37,7 @@
              <el-form-item label="手机" prop="tel">
                 <el-input v-model="form.tel" placeholder="请输入你的手机号" style="width:260px;"></el-input>
             </el-form-item>
-             <el-form-item label="微信" prop="weixin">
+             <el-form-item label="微信">
                 <el-input v-model="form.weixin" placeholder="请输入你的微信号" style="width:260px;"></el-input>
             </el-form-item>
             <el-form-item label="体验师类型" prop="vip_type">
@@ -55,8 +46,8 @@
                         <el-option label="见习体验师" value="3"></el-option>
                     </el-select>
             </el-form-item>
-            <el-form-item label="个人介绍" prop="introduction">
-                <el-input type="textarea" :rows='3' v-model="form.introduction" placeholder="请输入个人介绍" style="width:708px;"></el-input>
+            <el-form-item label="个人介绍" prop="userinfo">
+                <el-input type="textarea" :rows='3' v-model="form.userinfo" placeholder="请输入个人介绍" style="width:708px;"></el-input>
             </el-form-item>
     </BlockBox>
       <!-- 领域 -->
@@ -65,9 +56,9 @@
             <el-select v-model="form.main_area" multiple placeholder="请选择主打领域">
                 <el-option
                    v-for="item in initAllArea"
-                    :key="item.area_id"
+                    :key="item.areaid"
                     :label="item.area_name"
-                    :value="item.area_name">
+                    :value="item.areaid">
                 </el-option>
             </el-select>
         </el-form-item>
@@ -75,9 +66,9 @@
             <el-select v-model="form.minor_area" multiple placeholder="请选择跨界领域">
                 <el-option
                     v-for="item in initAllArea"
-                    :key="item.area_id"
+                    :key="item.areaid"
                     :label="item.area_name"
-                    :value="item.area_name">
+                    :value="item.areaid">
                 </el-option>
             </el-select>
         </el-form-item>
@@ -100,10 +91,10 @@
                 <el-input v-model="item.address" placeholder="请输入地址/账号名" style="width:260px;"></el-input>
             </el-form-item>
             <el-form-item label="粉丝/浏览量">
-                <el-input v-model="item.fans_num" placeholder="请输入粉丝/浏览量" style="width:260px;"></el-input>
+                <el-input v-model="item.fans_num" placeholder="请输入粉丝/浏览量" style="width:260px;" type="number"></el-input>
             </el-form-item>
             <el-form-item label="媒体报价">
-                <el-input v-model="item.media_price" placeholder="请输入媒体报价" style="width:260px;"></el-input>
+                <el-input v-model="item.offer" placeholder="请输入媒体报价" style="width:260px;"></el-input>
             </el-form-item>
             <a class="del-platform-btn icon-del" href="javascript:;" v-if="index>0" @click="delItem(form.influence,index)"></a>
         </div>
@@ -115,7 +106,7 @@
     <!-- 家居信息 -->
       <BlockBox :blockTitle='`家居信息`'>
         <el-form-item label="家庭信息">
-            <el-select v-model="form.home.home_info" :placeholder='`请选择家庭信息`'>
+            <el-select v-model="form.home_info" :placeholder='`请选择家庭信息`'>
                 <el-option
                     v-for="item in homeOptions.home_info"
                     :key="item.value"
@@ -125,7 +116,7 @@
             </el-select>
         </el-form-item>
         <el-form-item label="家居大小">
-            <el-select v-model="form.home.home_size" :placeholder='`请选择家居大小`'>
+            <el-select v-model="form.home_size" :placeholder='`请选择家居大小`'>
                 <el-option
                     v-for="item in homeOptions.home_size"
                     :key="item.value"
@@ -135,7 +126,7 @@
             </el-select>
         </el-form-item>
         <el-form-item label="装修风格">
-            <el-select v-model="form.home.home_style" :placeholder='`请选择装修风格`'>
+            <el-select v-model="form.home_style" :placeholder='`请选择装修风格`'>
                 <el-option
                     v-for="item in homeOptions.home_style"
                     :key="item.value"
@@ -145,7 +136,7 @@
             </el-select>
         </el-form-item>
         <el-form-item label="客厅大小">
-            <el-select v-model="form.home.room_size" :placeholder='`请选择客厅大小`'>
+            <el-select v-model="form.parlor_size" :placeholder='`请选择客厅大小`'>
                 <el-option
                     v-for="item in homeOptions.other_size"
                     :key="item.value"
@@ -155,7 +146,7 @@
             </el-select>
         </el-form-item>
         <el-form-item label="厨房大小">
-            <el-select v-model="form.home.kitchen_size" :placeholder='`请选择厨房大小`'>
+            <el-select v-model="form.kitchen_size" :placeholder='`请选择厨房大小`'>
                 <el-option
                     v-for="item in homeOptions.other_size"
                     :key="item.value"
@@ -165,7 +156,7 @@
             </el-select>
         </el-form-item>
         <el-form-item label="主卧大小">
-            <el-select v-model="form.home.bedroom_size" :placeholder='`请选择主卧大小`'>
+            <el-select v-model="form.room_size" :placeholder='`请选择主卧大小`'>
                 <el-option
                     v-for="item in homeOptions.other_size"
                     :key="item.value"
@@ -175,79 +166,64 @@
             </el-select>
         </el-form-item>
         <el-form-item label="子女信息">
-            <el-radio-group v-model="form.home.home_has_child">
-                <el-radio label="1">无</el-radio>
-                <el-radio label="2">有</el-radio>
+            <el-radio-group v-model="form.home_has_child">
+                <el-radio label="0">未知</el-radio>
+                <el-radio label="1">有</el-radio>
+                <el-radio label="2">没有</el-radio>
             </el-radio-group>
-            <el-input v-model="form.home.child_info" placeholder="描述一下子女信息吧~" style="width:550px;margin-left:48px;"></el-input>
+            <el-input v-model="form.child_info" placeholder="描述一下子女信息吧~" style="width:480px;margin-left:62px;"></el-input>
         </el-form-item>
         <el-form-item label="宠物信息">
-            <el-radio-group v-model="form.home.home_has_pet">
-                <el-radio label="1">无</el-radio>
-                <el-radio label="2">有</el-radio>
+            <el-radio-group v-model="form.home_has_pet">
+                <el-radio label="0">未知</el-radio>
+                <el-radio label="1">有</el-radio>
+                <el-radio label="2">没有</el-radio>
             </el-radio-group>
-            <el-input v-model="form.home.pet_info" placeholder="描述一下宠物信息吧~" style="width:550px;margin-left:48px;"></el-input>
+            <el-input v-model="form.pet_info" placeholder="描述一下宠物信息吧~" style="width:480px;margin-left:62px;"></el-input>
         </el-form-item>
     </BlockBox>
   
-    <!-- 内容能力 -->
-      <BlockBox :blockTitle='`内容能力`'>
-        <el-form-item v-for='(item,index) in form.content' :key='index' :label='(index>3)?"":item.title' style="width:395px;">
-            <el-input v-if='index>3' v-model="item.title" placeholder="信息名" style="width:90px;margin-right: 6px;"></el-input>
-            <el-select v-model="item.content" :placeholder='`请选择${item.title}`'>
-                <el-option
-                    v-for="item in contentOptions"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value">
-                </el-option>
-            </el-select>
-            <span v-if='index>3' class="icon-del" @click="delItem(form.content,index)"></span>
-        </el-form-item>
-        <el-form-item style="width:395px;">
-            <span class="icon-add cp blue" @click="addItem(form.content)">添加信息</span>
-        </el-form-item>  
-    </BlockBox>
+     <!-- 能力体现 -->
      <BlockBox :blockTitle='`能力体现`'>
      <el-row class="title-show">
-    <el-form-item :label="formData.coordinate.title" label-width="225px">
-    </el-form-item>
-     </el-row>
-    <el-form-item>
-    <el-checkbox-group v-model="formData.Ability.coordinate">
-      <el-checkbox :label="val" name="type" v-for="(val,index) in formData.coordinate.abInfo" :key='index'></el-checkbox>
-    </el-checkbox-group>
-    </el-form-item>
-
-     <el-row class="title-show">
-     <el-form-item :label="formData.major.title"  label-width="225px">
+     <el-form-item label="配合度（一个选项一分、总共3分）"  label-width="300px">
     </el-form-item>
     </el-row>
     <el-form-item>
-    <el-checkbox-group v-model="formData.Ability.major">
-      <el-checkbox :label="val" name="type" v-for="(val,index) in formData.major.abInfo" :key='index'></el-checkbox>
-    </el-checkbox-group>
+    
+      <el-checkbox label="外围渠道能否同步" @change="text1($event)" v-model="formData.ability.cooperate.synchronize" true-label='1' false-label='0' name="type"></el-checkbox>
+      <el-checkbox label="改稿件和标题" v-model="formData.ability.cooperate.revision_title" true-label='1' false-label='0' name="type"></el-checkbox>
+      <el-checkbox label="按时交稿、按要求改稿" v-model="formData.ability.cooperate.submit_blog" true-label='1' false-label='0' name="type"></el-checkbox>
+    </el-form-item>
+
+     <el-row class="title-show">
+     <el-form-item label="专业度（一个选项一分、总共3分）"  label-width="300px">
+    </el-form-item>
+    </el-row>
+    <el-form-item>
+      <el-checkbox label="账号原创能力" v-model="formData.ability.professionalism.original" true-label='1' false-label='0' name="type"></el-checkbox>
+      <el-checkbox label="相关邻域的职业" v-model="formData.ability.professionalism.area_title" true-label='1' false-label='' name="type"></el-checkbox>
+      <el-checkbox label="跨领域的合作内容产出质量" v-model="formData.ability.professionalism.area_content" true-label='1' false-label='0' name="type"></el-checkbox>
     </el-form-item>
     
      <el-row class="title-show">
-    <el-form-item :label="formData.photography.title"  label-width="225">
+     <el-form-item label="摄影水平（一个选项一分、总共2分）"  label-width="300px">
     </el-form-item>
     </el-row>
     <el-form-item>
-    <el-checkbox-group v-model="formData.Ability.photography">
-      <el-checkbox :label="val" name="type" v-for="(val,index) in formData.photography.abInfo" :key='index'></el-checkbox>
-    </el-checkbox-group>
+      <el-checkbox label="拍照技术和成像作品" v-model="formData.ability.photography.technology" true-label='1' false-label='0' name="type"></el-checkbox>
+      <el-checkbox label="专业的拍摄设备情况" v-model="formData.ability.photography.device" true-label='1' false-label='0' name="type"></el-checkbox>
     </el-form-item>
 
      <el-row class="title-show">
-     <el-form-item :label="formData.cameraShooting.title"  label-width="225">
+     <el-form-item label="摄像水平（一个选项一分，总共2分）"  label-width="300px">
     </el-form-item>
     </el-row>
     <el-form-item>
-    <el-checkbox-group v-model="formData.Ability.cameraShooting">
-      <el-checkbox :label="val" name="type" v-for="(val,index) in formData.cameraShooting.abInfo" :key='index'></el-checkbox>
-    </el-checkbox-group>
+      <el-checkbox label="视频拍摄及剪辑能力" v-model="formData.ability.camera.technology" true-label='1' false-label='0' name="type"></el-checkbox>
+      <el-checkbox label="专业的拍摄设备情况" v-model="formData.ability.camera.device" true-label='1' false-label='0' name="type"></el-checkbox>
     </el-form-item>
+    
 
     </BlockBox>
       <div class="tc sub-box">
@@ -259,12 +235,12 @@
     </div>
 
     <div class="footer-other">
-    <el-button  style="width:180px;" type="primary">打回到体验师审核</el-button>
-    <el-button style="margin-left:20px;width:180px" type="primary">通过入库</el-button>
+    <el-button  style="width:180px;" type="primary" @click="SubmitToVipCheck()">打回到体验师审核</el-button>
+    <el-button style="margin-left:20px;width:180px" @click="PassEditVipUserInfo('form')" type="primary">通过入库</el-button>
     </div>
     </div>
   </el-form>
- 
+ </div>
 </template>
 <script>
 import BlockBox from 'components/block-box/block-box'
@@ -275,68 +251,41 @@ import qs from 'qs'
 
 //平台信息
 const platform_item = () => ({
-    platform: [],
-    username: '',
-    fans: '',
-    media_price: '',
-    jiguo_discount: ''
-})
-//能力信息
-const content_item = () => ({
-    title: '',
-    en_title: '',
-    content: ''
-})
-//其他信息
-const block_box_content = () => ({
-    title: '',
-    content: [{
-        title: '',
-        en_title: '',
-        content: ''
-    }, {
-        title: '',
-        en_title: '',
-        content: ''
-    }, {
-        title: '',
-        en_title: '',
-        content: ''
-    }]
-})
-//其他信息子选项
-const c_item = () => ({
-    title: '',
-    en_title: '',
-    content: ''
+    address: '',
+    fans_num: '',
+    platform_id:'',
+    offer:''
 })
 export default {
     props: {
         formData: {
             type: Object,
-            default: null
+            default: null   
         },
         uidInfoData: {
             type: Object,
             default: null
-        }
+        },
+         plaformList: {
+            default: null
+        },
     },
     data () {
         return {
-            //平台测试数据
-            platformText:[],
-            theMath:[],
             //所有的领域数据
             initAllArea:[],
             img_preview_list: [],
             labelPosition: 'left',
+            //vip数据信息
+            uidInfo: {},
+            platform:[],
             rules: {
                 username: [{
                     required: true,
                     message: '请输入姓名',
                     trigger: 'blur'
                 }],
-                userage: [{
+                birthday: [{
                     required: true,
                     message: '请输入出生日期',
                     trigger: 'blur'
@@ -354,7 +303,7 @@ export default {
                 }],
                 position:[{
                     required: true,
-                    message: '请至少选择一个职位',
+                    message: '请选择职位',
                     trigger: 'change'
                 }],
                 tel: [{
@@ -362,12 +311,7 @@ export default {
                     message: '请输入手机号',
                     trigger: 'blur'
                 }],
-                weixin: [{
-                    required: true,
-                    message: '请输入微信号',
-                    trigger: 'blur'
-                }],
-                introduction:[{
+                userinfo:[{
                     required: true,
                     message: '请输入个人介绍',
                     trigger: 'blur'
@@ -378,193 +322,68 @@ export default {
                     trigger: 'blur'
                 }],
             },
-            InfluenceOptions: [
-                {
-                    value: '自媒体',
-                    label: '自媒体',
-                    children: [
-                        {
-                            value: '微信朋友圈',
-                            label: '微信朋友圈'
-                        },
-                        {
-                            value: '微信公众号',
-                            label: '微信公众号'
-                        },
-                        {
-                            value: '微博',
-                            label: '微博'
-                        },
-                        {
-                            value: '知乎',
-                            label: '知乎'
-                        },
-                        {
-                            value: '其他',
-                            label: '其他'
-                        }
-                    ]
-                },
-                {
-                    value: '外围渠道',
-                    label: '外围渠道',
-                    children: [
-                        {
-                            value: '今日头条',
-                            label: '今日头条'
-                        },
-                        {
-                            value: '搜狐新闻',
-                            label: '搜狐新闻'
-                        },
-                        {
-                            value: '网易新闻',
-                            label: '网易新闻'
-                        },
-                        {
-                            value: '新浪看点',
-                            label: '新浪看点'
-                        },
-                        {
-                            value: 'UC',
-                            label: 'UC'
-                        },
-                        {
-                            value: '京东发现',
-                            label: '京东发现'
-                        },
-                        {
-                            value: '淘宝头条',
-                            label: '淘宝头条'
-                        },
-                        {
-                            value: '其他',
-                            label: '其他'
-                        }
-                    ]
-                },
-                {
-                    value: '视频自媒体',
-                    label: '视频自媒体',
-                    children: [
-                        {
-                            value: '优酷',
-                            label: '优酷'
-                        },
-                        {
-                            value: '土豆',
-                            label: '土豆'
-                        },
-                        {
-                            value: '爱奇艺',
-                            label: '爱奇艺'
-                        },
-                        {
-                            value: '腾讯',
-                            label: '腾讯'
-                        },
-                        {
-                            value: '秒拍',
-                            label: '秒拍'
-                        },
-                        {
-                            value: '抖音',
-                            label: '抖音'
-                        },
-                        {
-                            value: '其他',
-                            label: '其他'
-                        }
-                    ]
-                },
-                {
-                    value: '直播',
-                    label: '直播',
-                    children: [
-                        {
-                            value: '斗鱼',
-                            label: '斗鱼'
-                        },
-                        {
-                            value: '一直播',
-                            label: '一直播'
-                        },
-                        {
-                            value: '映客',
-                            label: '映客'
-                        },
-                        {
-                            value: 'YY',
-                            label: 'YY'
-                        },
-                        {
-                            value: '其他',
-                            label: '其他'
-                        }
-                    ]
-                }
-            ],
-            contentOptions: [
-                {
-                    value: '优秀',
-                    label: '优秀'
-                }, {
-                    value: '良好',
-                    label: '良好'
-                }, {
-                    value: '一般',
-                    label: '一般'
-                }, {
-                    value: '无',
-                    label: '无'
-                }
-            ],
+            InfluenceOptions:[],
             homeOptions: {
                 home_info: [{
-                    value: '已婚',
-                    label: '已婚'
+                    value: '0',
+                    label: '未知'
                 }, {
-                    value: '单身',
+                    value: '1',
+                    label: '已婚'
+                },{
+                    value: '2',
                     label: '单身'
                 }],
                 home_size: [{
-                    value: '0~80',
-                    label: '0~80'
+                    value: '0',
+                    label: '未知'
                 }, {
-                    value: '80~120',
-                    label: '80~120'
+                    value: '1',
+                    label: '100平米以内'
                 }, {
-                    value: '120+',
-                    label: '120+单身'
+                    value: '2',
+                    label: '100-150'
                 }, {
-                    value: '别墅',
-                    label: '别墅'
+                    value: '3',
+                    label: '150-200'
+                },{
+                    value: '4',
+                    label: '200平米以上'
                 }],
                 home_style: [{
-                    value: '中式',
-                    label: '中式'
+                    value: '0',
+                    label: '未知'
                 }, {
-                    value: '日式',
-                    label: '日式'
-                }, {
-                    value: '欧式',
+                    value: '1',
                     label: '欧式'
                 }, {
-                    value: '美式',
-                    label: '美式'
+                    value: '2',
+                    label: '中式'
+                }, {
+                    value: '3',
+                    label: '美式混搭'
+                }, {
+                    value: '4',
+                    label: '日式'
+                }, {
+                    value: '5',
+                    label: '其他'
                 }],
                 other_size: [{
-                    value: '10~20',
-                    label: '10~20'
+                    value: '0',
+                    label: '未知'
                 }, {
-                    value: '20~40',
-                    label: '20~40'
+                    value: '1',
+                    label: '100平米以内'
                 }, {
-                    value: '40~60',
-                    label: '40~60'
+                    value: '2',
+                    label: '100-150'
                 }, {
-                    value: '60+',
-                    label: '60+'
+                    value: '3',
+                    label: '150-200'
+                },{
+                    value: '4',
+                    label: '200平米以上'
                 }]
             },
           
@@ -572,31 +391,25 @@ export default {
         }
     },
     computed: {
-        platform () {
-            const platform = []
-            for (let i in this.form.influence) {
-                const platformItemArr = []
-                platformItemArr.push(this.form.influence[i].parent_platform)
-                platformItemArr.push(this.form.influence[i].child_platform)
-                platform.push(platformItemArr)
-            }
-            return platform
-        }
+        
     },
     created () {
         this.initFormData()
         //获取平台所有信息方法
         this.GetAllPlaform()
+        // console.log(this.formData.influence);
         //获取主打领域所有信息方法
          this.GetAllArea()
     },
     methods: {
+        //遍历数据
+
         //测试数据
         text(){
-         console.log(this.form.main_area);
+           
         },
-        handleChange(value) {
-        console.log(value);
+        text1(event){
+            console.log(event);
         },
         //获取平台所有信息方法
         GetAllPlaform(){
@@ -605,10 +418,8 @@ export default {
                 url: '/admin/vip/GetAllPlaform',
             })
             .then((res)=>{
-            //   console.log(res);
-              console.log(res.data.result);
-                 this.platformText=res.data.result;
-            //   this.InfluenceOptions=res.data.result;
+              this.InfluenceOptions=res.data.result;
+              console.log(this.InfluenceOptions);
             })
         },
         //获取主打领域所有信息方法
@@ -618,7 +429,6 @@ export default {
                 url: '/admin/vip/GetAllArea',
             })
             .then((res)=>{
-            // console.log(res.data.result);
             this.initAllArea=res.data.result;
             })
         },
@@ -627,93 +437,123 @@ export default {
             this.$http({
                 method: 'get',
                 url: '/admin/vip/SubmitToVipCheck',
+                 params: {
+                    id: window.vipUid
+                 }
             })
             .then((res)=>{
-            console.log(res.data.result);
-            })
-        },
-        //编辑体验师信息
-         EditVipUserInfo(){
-            this.$http({
-                method: 'post',
-                url: '/admin/vip/EditVipUserInfo',
-                 headers: {
-                            'Content-Type': 'application/x-www-form-urlencoded',
-                            'Accept': 'application/json'
-                        },
-                        // data: qs.stringify(this.form)
-            })
-            .then((res)=>{
-            console.log(res.data.result);
+            console.log(res);
             })
         },
         //通过入库
-         PassEditVipUserInfo(){
-            this.$http({
-                method: 'post',
-                url: '/admin/vip/PassEditVipUserInfo',
-                 headers: {
+         PassEditVipUserInfo(formName){
+                       this.$refs[formName].validate((valid) => {
+                if (valid) {
+                let data=qs.stringify({data:this.form,id:window.vipUid});
+                    this.$http({
+                        method: 'post',
+                        url: 'admin/vip/EditVipUserInfo',
+                        headers: {
                             'Content-Type': 'application/x-www-form-urlencoded',
                             'Accept': 'application/json'
                         },
-                        // data: qs.stringify(this.form)
-            })
-            .then((res)=>{
-            console.log(res.data.result);
+                        data:data
+                    }).then(res => {
+                        console.log(res);
+                        // res = res.data
+                        // if (res.resultCode === "0") {
+                        //     this.$message.success(res.errorMsg)
+                        //     setTimeout(function () {
+                        //         window.location = '/admin/vip/list.html'
+                        //     }, 500)
+                        // } else {
+                        //     this.$message.error(res.errorMsg)
+                        // }
+                    })
+                    // .catch(error => {
+                    //     console.log('网络错误，不能访问')
+                    // })
+                }
             })
         },
-
+        //遍历plaform值
+        influenceMap(){
+        let arr=[];
+        console.log(this.form.influence);
+         this.form.influence.map((item)=>{
+         arr.push([item.f_platform_id,item.platform_id])
+        })
+        console.log(arr);
+         this.platform=arr;
+        },
         initFormData () {
             this.form = this.formData
+            // console.log(this.form);
+            // this.uidInfo=this.uidInfoData
+            // console.log(this.uidInfo)
         },
         platformChange (index) {
-            const platform = [...this.platform[index]]
             console.log(this.platform[index]);
-            console.log(platform);
-            this.form.influence[index].parent_platform = platform[0]
-            this.form.influence[index].child_platform = platform[1]
-            console.log(this.form.influence);
+            this.form.influence[index].platform_id=this.platform[index][1];
+            // console.log(this.form.influence);
         },
+        //转换时间格式
+         getBirthday(){
+	        var start =this.form.birthday;
+	        var spaceMark = "-";
+	        var year = start.getFullYear();
+	        var month = start.getMonth() + 1;
+	        var today = start.getDate();
+	        if (month >= 1 && month <= 9) {
+	          month = "0" + month;
+	        }
+	        if (today >= 0 && today <= 9) {
+	          today = "0" + today;
+	        }
+	        var birthday = year + spaceMark + month + spaceMark + today;
+	        this.form.birthday=birthday;
+        },
+        //添加平台信息
         addPlatform () {
             this.form.influence.push(platform_item())
         },
         delItem (content, index) {
             content.splice(index, 1)
         },
-        addItem (content) {
-            content.push(content_item())
-        },
         delBlockBox (i) {
             this.form.other.splice(i, 1)
         },
-        addCItem (i) {
-            this.form.other[i].content.push(c_item())
-        },
+        //提交
         submitForm (formName) {
+                console.log(this.form);
+                console.log(JSON.stringify(this.form));
             this.$refs[formName].validate((valid) => {
-                if (valid) {
+                // if (valid) {
+                let data=qs.stringify({data:this.form,id:window.vipUid});
                     this.$http({
                         method: 'post',
-                        url: '/admin/vip/InsertUser',
+                        url: 'admin/vip/EditVipUserInfo',
                         headers: {
                             'Content-Type': 'application/x-www-form-urlencoded',
                             'Accept': 'application/json'
                         },
-                        data: qs.stringify(this.form)
+                        data:data
                     }).then(res => {
-                        res = res.data
-                        if (res.resultCode === "0") {
-                            this.$message.success(res.errorMsg)
-                            setTimeout(function () {
-                                window.location = '/admin/vip/list.html'
-                            }, 500)
-                        } else {
-                            this.$message.error(res.errorMsg)
-                        }
-                    }).catch(error => {
-                        console.log('网络错误，不能访问')
+                        console.log(res);
+                        // res = res.data
+                        // if (res.resultCode === "0") {
+                        //     this.$message.success(res.errorMsg)
+                        //     setTimeout(function () {
+                        //         window.location = '/admin/vip/list.html'
+                        //     }, 500)
+                        // } else {
+                        //     this.$message.error(res.errorMsg)
+                        // }
                     })
-                }
+                    // .catch(error => {
+                    //     console.log('网络错误，不能访问')
+                    // })
+                // }
             })
         }
     },
@@ -724,10 +564,13 @@ export default {
     },
     watch: {
         formData (val) {
-            if (val.content) {
+            // if(val.influence){
                 this.initFormData()
-            }
+            // }
         },
+          plaformList(val) {
+            this.influenceMap();
+        }
     }
 }
 </script>
@@ -771,7 +614,7 @@ export default {
     width: 100%;
 }
 .footer{
-    margin:60px 0 60px 0;
+    margin:40px 0 60px 0;
     width: 100%;
     .footer-sub,.footer-other{
      display: flex;

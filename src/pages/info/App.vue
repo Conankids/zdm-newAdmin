@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <Title :titleText='titleText'></Title>
-    <Form :formData='formData' :uidInfoData='uidInfoData'/>
+    <Form :formData='formData' :uidInfoData='uidInfoData' :plaformList='plaformList'/>
   </div>
 </template>
 
@@ -13,119 +13,152 @@ import Form from 'components/form-info/form'
 export default {
   data() {
     return {
-      titleText: '体验师详情/用户名',
+      plaformList:[],
+      titleText: '体验师详情/',
+      uid: window.vipUid,
+      uidInfoData: {},
       formData: {
         username: '',
-        sex: '男',
+        birthday:'',
+        sex: '2',
         age:'',
-        province: '',
-        city: '',
+          //公司
         company: '',
+         //职位
         position: '',
-        introduction: '',
         tel: '',
         weixin: '',
-        address: '',
+        //用户介绍
+        userinfo:'',
+        //体验师类型
         vip_type:'',
+        //领域
+        main_area:[],
+        minor_area:[],
         influence: [
           {
-            parent_platform: '',
-            child_platform: '',
             address: '',
-            fans_num: '500',
-            media_price: '',
-          }
-        ],
-        //主打领域
-        main_area: [],
-        //跨界领域
-        minor_area: [],
-        content: [{
-          title: '文字能力',
-          en_title: 'content_write',
-          content: ''
-        }, {
-          title: '拍照能力',
-          en_title: 'content_pictures',
-          content: ''
-        }, {
-          title: '视频能力',
-          en_title: 'content_video',
-          content: ''
-        }, {
-          title: '直播能力',
-          en_title: 'content_live',
-          content: ''
-        }, {
-          title: '',
-          en_title: '',
-          content: ''
-        }],
-        business: [{
-          title: '场景体验',
-          en_title: 'business_tiyan',
-          content: ''
-        }, {
-          title: '理性实验',
-          en_title: 'business_shiyan',
-          content: ''
-        }, {
-          title: '视频出境',
-          en_title: 'business_chujing',
-          content: ''
-        }, {
-          title: '直播口才',
-          en_title: 'business_koucai',
-          content: ''
-        }, {
-          title: '',
-          en_title: '',
-          content: ''
-        }],
-        home: {
-          home_info: '',
-          home_size: '',
-          home_style: '中式',
-          room_size: '',
-          kitchen_size: '',
-          bedroom_size: '',
-          home_has_child: '2',
-          home_has_pet: '2',
-          child_info: '小学',
-          pet_info: '有，黄喉龟'
-        },
-        //能力体现
-          coordinate:{
-          title:'配合度（一个选项一分，总共3分)',
-          abInfo:['地推活动','线下主题活动','单纯品牌曝光']
+            fans_num: '',
+            platform_id:'',
+            offer:''
           },
-         major:{
-          title:'专业度（一个选项一分，总共3分)',
-          abInfo:['账号原创能力','相关邻域的职业','跨领域的合作内容产出质量']
-         },
-         photography:{
-          title:'摄影水平（一个选项一分，总共3分)',
-          abInfo:['拍照技术和成像水平','专业的拍摄设备情况']
-         },
-         cameraShooting:{
-          title:'摄像水平（一个选项一分，总共3分)',
-          abInfo:['视频拍摄及剪辑能力','专业的拍摄设备情况']
-         },
-         Ability:{
-           coordinate:[],
-           major:[],
-           photography:[],
-           cameraShooting:[]
-         }
+        ],
+         //家庭信息
+          home_info: '',
+          //厨房风格
+          home_style: '2',
+          //客厅
+          parlor_size:'',
+          //家居
+          home_size: '',
+          //主卧
+          room_size: '',
+          //厨房
+          kitchen_size: '',
+          //是否有孩子
+          home_has_child: '1',
+          // 是否有宠物
+          home_has_pet: '1',
+          //子女信息
+          child_info: '',
+          // 宠物信息
+          pet_info: '',
 
+        //能力体现
+         ability:{
+           cooperate:{
+             synchronize:'0',
+             revision_title:'0',
+             submit_blog:'0'
+           },
+            professionalism:{
+                original:'0',
+                area_title:'0',
+                area_content:'0',
+            },
+            photography:{
+             technology:'0',
+             device:'0',
+            },
+            camera:{
+             technology:'0',
+             device:'0',
+            }
+         },
       },
-      uidInfoData: {
-        groupname: '',
-        blog_avg_time: '',
-        blog_avg_score: '',
-        win_num: '',
-        apply_num: ''
-      }
+    }
+  },
+  created() {
+    //获取体验师详情
+    this.GetVipUserInfo()
+    // this.getFormData()
+  },
+  methods: {
+    //获取体验师详情
+      GetVipUserInfo(){
+          this.$http({
+              method: 'get',
+              url: '/admin/vip/GetVipUserInfo',
+              params:{
+                  id:42
+              }
+          })
+          .then((res)=>{
+              let resData=res.data.result.data;
+             
+             let formData = {}
+              Object.keys(this.formData).forEach(item=>{
+                if(resData[item]){
+                  formData[item] = resData[item]
+                  if(item=='main_area'){
+                    formData[item] = resData['main_area_id']
+                  }
+                  if(item=='minor_area'){
+                    formData[item] = resData['minor_area_id']
+                  }
+                }else{
+                  formData[item]=this.formData[item]
+                }
+              })
+              console.log(formData);
+              // if(!resData.ability){
+              //   resData.ability= {
+              //                     cooperate:{
+              //                       synchronize:'',
+              //                       revision_title:'',
+              //                       submit_blog:''
+              //                     },
+              //                       professionalism:{
+              //                           original:'',
+              //                           area_title:'',
+              //                           area_content:'',
+              //                       },
+              //                       photography:{
+              //                       technology:'',
+              //                       device:'',
+              //                       },
+              //                       camera:{
+              //                       technology:'',
+              //                       device:'',
+              //                       }
+              //                   }
+              // }
+              this.formData=formData;
+              this.plaformList=res.data.result.plaform;
+              console.log(this.formData.influence);
+          })
+      },
+      getFormData() {
+    //   // const vip_user = window.vip_user
+    //   // this.formData = window.vip_user;
+    //   this.uidInfoData = {
+    //     // groupname: vip_user.jiguo_groupname,
+    //     // blog_avg_time: vip_user.blog_avg_time,
+    //     // blog_avg_score: vip_user.blog_avg_score,
+    //     // win_num: vip_user.win_num,
+    //     // apply_num: vip_user.apply_num
+    //   }
+      this.titleText = `编辑信息/${this.formData.username}`
     }
   },
   components: {
