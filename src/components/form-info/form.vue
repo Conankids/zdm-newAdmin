@@ -25,12 +25,7 @@
                 <el-input v-model="form.company" placeholder="请输入公司信息" style="width:260px;"></el-input>
             </el-form-item>
             <el-form-item label="职位" prop="position">
-                <el-select v-model="form.position" placeholder="请选择职位" style="width:260px;">
-                    <el-option label="创始人高管VP" value="创始人高管VP"></el-option>
-                    <el-option label="中层负责人" value="中层负责人"></el-option>
-                    <el-option label="普通员工" value="普通员工"></el-option>
-                    <el-option label="自由职业" value="自由职业"></el-option>
-                </el-select>
+                <el-input v-model="form.position" placeholder="请输入你的职位" style="width:260px;"></el-input>                    
             </el-form-item>
              <el-form-item label="手机" prop="tel">
                 <el-input v-model="form.tel" placeholder="请输入你的手机号" style="width:260px;"></el-input>
@@ -239,7 +234,7 @@
  </div>
 </template>
 <script>
-import Bus from '@/pages/info/bus.js'
+import Bus from '../../pages/info/bus.js'
 import BlockBox from 'components/block-box/block-box'
 import { provinceAndCityData, CodeToText, TextToCode } from 'element-china-area-data'
 import WinHistory from 'components/win-history/win-history'
@@ -299,8 +294,8 @@ export default {
                 }],
                 position:[{
                     required: true,
-                    message: '请选择职位',
-                    trigger: 'change'
+                    message: '请输入你的职位',
+                    trigger: 'blur'
                 }],
                 tel: [{
                     required: true,
