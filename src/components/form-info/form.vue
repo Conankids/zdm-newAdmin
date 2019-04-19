@@ -406,7 +406,11 @@ export default {
                 url: '/admin/vip/GetAllPlaform',
             })
             .then((res)=>{
+              if(res.data.resultCode==0){
               this.InfluenceOptions=res.data.result;
+              }else{
+                 this.$message.error(res.data.errorMsg);
+              }
             })
         },
         //获取主打领域所有信息方法
@@ -416,7 +420,11 @@ export default {
                 url: '/admin/vip/GetAllArea',
             })
             .then((res)=>{
-            this.initAllArea=res.data.result;
+              if(res.data.resultCode==0){            
+              this.initAllArea=res.data.result;
+              }else{
+                 this.$message.error(res.data.errorMsg);
+              }
             })
         },
         // 打回到体验师审核
@@ -449,7 +457,7 @@ export default {
                  this.submitLoading=true;            
                     this.$http({
                         method: 'post',
-                        url: 'admin/vip/PassEditVipUserInfo',
+                        url: '/admin/vip/PassEditVipUserInfo',
                         headers: {
                             'Content-Type': 'application/x-www-form-urlencoded',
                             'Accept': 'application/json'
@@ -533,7 +541,7 @@ export default {
                     this.submitLoading=true; 
                     this.$http({
                         method: 'post',
-                        url: 'admin/vip/EditVipUserInfo',
+                        url: '/admin/vip/EditVipUserInfo',
                         headers: {
                             'Content-Type': 'application/x-www-form-urlencoded',
                             'Accept': 'application/json'
