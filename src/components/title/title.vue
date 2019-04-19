@@ -1,18 +1,35 @@
 <template>
   <div class="title">
       <h3 class="title-left">{{titleText}}</h3>
-      <h3 class="count">总分：</h3>
+      <h3 class="count">总分：{{total}}</h3>
   </div>
 </template>
 
 <script>
+import Bus from '@/pages/info/bus.js'
+
 export default {
     props: {
         titleText: {
             type: String,
             default: ''
         }
-    }
+    },
+    data() {
+      return {
+        total:''
+      }
+    },
+    created() {
+      this.getCount();
+    },
+    methods: {
+        getCount(){
+            Bus.$on("myTotal",(message)=>{   //这里最好用箭头函数，不然this指向有问题
+                 this.total= message      
+            })
+       }
+    },
 }
 </script>
 

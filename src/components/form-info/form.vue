@@ -1,8 +1,6 @@
 <template>
 <div>
-    <el-button @click="text()">测试文件</el-button>
   <el-form :inline="true" :rules="rules" :label-position="labelPosition" ref="form" :model="form" label-width="100px">
-      <!-- <el-button @click="text()">测试数据</el-button> -->
       <!-- 基本信息 -->
       <BlockBox :blockTitle='`基本信息`'>
             <el-form-item label="姓名" prop="username">
@@ -191,9 +189,9 @@
     </el-row>
     <el-form-item>
     
-      <el-checkbox label="外围渠道能否同步" @change="text1($event)" v-model="formData.ability.cooperate.synchronize" true-label='1' false-label='0' name="type"></el-checkbox>
-      <el-checkbox label="改稿件和标题" v-model="formData.ability.cooperate.revision_title" true-label='1' false-label='0' name="type"></el-checkbox>
-      <el-checkbox label="按时交稿、按要求改稿" v-model="formData.ability.cooperate.submit_blog" true-label='1' false-label='0' name="type"></el-checkbox>
+      <el-checkbox label="外围渠道能否同步" @change="countNum" v-model="formData.ability.cooperate.synchronize" true-label='1' false-label='0' name="type"></el-checkbox>
+      <el-checkbox label="改稿件和标题" @change="countNum" v-model="formData.ability.cooperate.revision_title" true-label='1' false-label='0' name="type"></el-checkbox>
+      <el-checkbox label="按时交稿、按要求改稿" @change="countNum" v-model="formData.ability.cooperate.submit_blog" true-label='1' false-label='0' name="type"></el-checkbox>
     </el-form-item>
 
      <el-row class="title-show">
@@ -201,9 +199,9 @@
     </el-form-item>
     </el-row>
     <el-form-item>
-      <el-checkbox label="账号原创能力" v-model="formData.ability.professionalism.original" true-label='1' false-label='0' name="type"></el-checkbox>
-      <el-checkbox label="相关邻域的职业" v-model="formData.ability.professionalism.area_title" true-label='1' false-label='' name="type"></el-checkbox>
-      <el-checkbox label="跨领域的合作内容产出质量" v-model="formData.ability.professionalism.area_content" true-label='1' false-label='0' name="type"></el-checkbox>
+      <el-checkbox label="账号原创能力" @change="countNum" v-model="formData.ability.professionalism.original" true-label='1' false-label='0' name="type"></el-checkbox>
+      <el-checkbox label="相关邻域的职业" @change="countNum" v-model="formData.ability.professionalism.area_title" true-label='1' false-label='0' name="type"></el-checkbox>
+      <el-checkbox label="跨领域的合作内容产出质量" @change="countNum" v-model="formData.ability.professionalism.area_content" true-label='1' false-label='0' name="type"></el-checkbox>
     </el-form-item>
     
      <el-row class="title-show">
@@ -211,8 +209,8 @@
     </el-form-item>
     </el-row>
     <el-form-item>
-      <el-checkbox label="拍照技术和成像作品" v-model="formData.ability.photography.technology" true-label='1' false-label='0' name="type"></el-checkbox>
-      <el-checkbox label="专业的拍摄设备情况" v-model="formData.ability.photography.device" true-label='1' false-label='0' name="type"></el-checkbox>
+      <el-checkbox label="拍照技术和成像作品" @change="countNum" v-model="formData.ability.photography.technology" true-label='1' false-label='0' name="type"></el-checkbox>
+      <el-checkbox label="专业的拍摄设备情况" @change="countNum" v-model="formData.ability.photography.device" true-label='1' false-label='0' name="type"></el-checkbox>
     </el-form-item>
 
      <el-row class="title-show">
@@ -220,29 +218,28 @@
     </el-form-item>
     </el-row>
     <el-form-item>
-      <el-checkbox label="视频拍摄及剪辑能力" v-model="formData.ability.camera.technology" true-label='1' false-label='0' name="type"></el-checkbox>
-      <el-checkbox label="专业的拍摄设备情况" v-model="formData.ability.camera.device" true-label='1' false-label='0' name="type"></el-checkbox>
+      <el-checkbox label="视频拍摄及剪辑能力" @change="countNum" v-model="formData.ability.camera.technology" true-label='1' false-label='0' name="type"></el-checkbox>
+      <el-checkbox label="专业的拍摄设备情况"  @change="countNum" v-model="formData.ability.camera.device" true-label='1' false-label='0' name="type"></el-checkbox>
     </el-form-item>
     
 
     </BlockBox>
       <div class="tc sub-box">
-            <!-- <el-button type="primary" @click="submitForm('form')">提交</el-button> -->
       </div> 
-    <div class="footer">
-     <div class="footer-sub">
-    <el-button style="width:180px;" type="primary" @click="submitForm('form')">提交</el-button>
+    <div class="footer" v-if="vipInfoData">
+    <div class="footer-other" v-if="(vipInfoData.data.type=='1'&&vipInfoData.data.status=='2')">
+    <el-button style="width:180px;" type="primary" @click="SubmitToVipCheck()" :loading="submitLoading">打回到体验师审核</el-button>
+    <el-button style="margin-left:20px;width:180px" @click="PassEditVipUserInfo('form')" type="primary" :loading="submitLoading">通过入库</el-button>
     </div>
-
-    <div class="footer-other">
-    <el-button  style="width:180px;" type="primary" @click="SubmitToVipCheck()">打回到体验师审核</el-button>
-    <el-button style="margin-left:20px;width:180px" @click="PassEditVipUserInfo('form')" type="primary">通过入库</el-button>
+     <div class="footer-sub" v-else>
+    <el-button style="width:180px;"  type="primary" @click="submitForm('form')" :loading="submitLoading">提交</el-button>
     </div>
     </div>
   </el-form>
  </div>
 </template>
 <script>
+import Bus from '@/pages/info/bus.js'
 import BlockBox from 'components/block-box/block-box'
 import { provinceAndCityData, CodeToText, TextToCode } from 'element-china-area-data'
 import WinHistory from 'components/win-history/win-history'
@@ -262,16 +259,15 @@ export default {
             type: Object,
             default: null   
         },
-        uidInfoData: {
-            type: Object,
-            default: null
-        },
-         plaformList: {
+         vipInfoData: {
+            type:Object,
             default: null
         },
     },
     data () {
         return {
+            //添加loading
+            submitLoading:false,
             //所有的领域数据
             initAllArea:[],
             img_preview_list: [],
@@ -397,20 +393,12 @@ export default {
         this.initFormData()
         //获取平台所有信息方法
         this.GetAllPlaform()
-        // console.log(this.formData.influence);
         //获取主打领域所有信息方法
          this.GetAllArea()
+         //发送总分数据
+         this.initTotal();
     },
     methods: {
-        //遍历数据
-
-        //测试数据
-        text(){
-           
-        },
-        text1(event){
-            console.log(event);
-        },
         //获取平台所有信息方法
         GetAllPlaform(){
             this.$http({
@@ -419,7 +407,6 @@ export default {
             })
             .then((res)=>{
               this.InfluenceOptions=res.data.result;
-              console.log(this.InfluenceOptions);
             })
         },
         //获取主打领域所有信息方法
@@ -434,6 +421,7 @@ export default {
         },
         // 打回到体验师审核
          SubmitToVipCheck(){
+            this.submitLoading=true;
             this.$http({
                 method: 'get',
                 url: '/admin/vip/SubmitToVipCheck',
@@ -442,60 +430,59 @@ export default {
                  }
             })
             .then((res)=>{
-            console.log(res);
+            this.submitLoading=false;
+             if(res.data.resultCode==0){
+              this.$message.success(res.data.errorMsg);
+                    setTimeout(function () {
+                    window.location.href='/admin/GetVipUserCheckList?status=2'
+                    }, 500)
+              }else{
+                  this.$message.error(res.data.errorMsg);
+              }
             })
         },
         //通过入库
          PassEditVipUserInfo(formName){
-                       this.$refs[formName].validate((valid) => {
+            this.$refs[formName].validate((valid) => {
                 if (valid) {
                 let data=qs.stringify({data:this.form,id:window.vipUid});
+                 this.submitLoading=true;            
                     this.$http({
                         method: 'post',
-                        url: 'admin/vip/EditVipUserInfo',
+                        url: 'admin/vip/PassEditVipUserInfo',
                         headers: {
                             'Content-Type': 'application/x-www-form-urlencoded',
                             'Accept': 'application/json'
                         },
                         data:data
                     }).then(res => {
-                        console.log(res);
-                        // res = res.data
-                        // if (res.resultCode === "0") {
-                        //     this.$message.success(res.errorMsg)
-                        //     setTimeout(function () {
-                        //         window.location = '/admin/vip/list.html'
-                        //     }, 500)
-                        // } else {
-                        //     this.$message.error(res.errorMsg)
-                        // }
+                       this.submitLoading=false; 
+                       if(res.data.resultCode==0){
+                          this.$message.success(res.data.errorMsg)
+                               setTimeout(function () {
+                               window.location.href='/admin/GetVipUserCheckList?status=2'
+                                }, 500)
+                          }else{
+                            this.$message.error(res.data.errorMsg);
+                           }
                     })
-                    // .catch(error => {
-                    //     console.log('网络错误，不能访问')
-                    // })
                 }
             })
         },
         //遍历plaform值
         influenceMap(){
         let arr=[];
-        console.log(this.form.influence);
          this.form.influence.map((item)=>{
          arr.push([item.f_platform_id,item.platform_id])
         })
-        console.log(arr);
          this.platform=arr;
         },
         initFormData () {
             this.form = this.formData
-            // console.log(this.form);
-            // this.uidInfo=this.uidInfoData
-            // console.log(this.uidInfo)
+            this.initTotal();
         },
         platformChange (index) {
-            console.log(this.platform[index]);
             this.form.influence[index].platform_id=this.platform[index][1];
-            // console.log(this.form.influence);
         },
         //转换时间格式
          getBirthday(){
@@ -523,13 +510,27 @@ export default {
         delBlockBox (i) {
             this.form.other.splice(i, 1)
         },
+         //计算change事件的方法
+         countNum(val){
+            this.initTotal();
+         },
+         //获取当前的选中数目
+         initTotal(){
+         let ability=this.formData.ability;
+         let countNum=0;
+         Object.keys(ability).forEach((item)=>{
+          Object.keys(ability[item]).forEach((info)=>{
+              countNum+=Number(ability[item][info])
+          })
+         })
+           Bus.$emit("myTotal",countNum)
+         },
         //提交
         submitForm (formName) {
-                console.log(this.form);
-                console.log(JSON.stringify(this.form));
             this.$refs[formName].validate((valid) => {
-                // if (valid) {
+                if (valid) {
                 let data=qs.stringify({data:this.form,id:window.vipUid});
+                    this.submitLoading=true; 
                     this.$http({
                         method: 'post',
                         url: 'admin/vip/EditVipUserInfo',
@@ -539,21 +540,17 @@ export default {
                         },
                         data:data
                     }).then(res => {
-                        console.log(res);
-                        // res = res.data
-                        // if (res.resultCode === "0") {
-                        //     this.$message.success(res.errorMsg)
-                        //     setTimeout(function () {
-                        //         window.location = '/admin/vip/list.html'
-                        //     }, 500)
-                        // } else {
-                        //     this.$message.error(res.errorMsg)
-                        // }
+                        this.submitLoading=false; 
+                        if(res.data.resultCode==0){
+                          this.$message.success(res.data.errorMsg)
+                            setTimeout(function () {
+                                 window.location.href='/admin/vip/GetVipUserList'
+                            }, 500)
+                          }else{
+                            this.$message.error(res.data.errorMsg);
+                          }
                     })
-                    // .catch(error => {
-                    //     console.log('网络错误，不能访问')
-                    // })
-                // }
+                }
             })
         }
     },
@@ -564,12 +561,8 @@ export default {
     },
     watch: {
         formData (val) {
-            // if(val.influence){
                 this.initFormData()
-            // }
-        },
-          plaformList(val) {
-            this.influenceMap();
+                this.influenceMap();
         }
     }
 }

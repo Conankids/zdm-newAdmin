@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <Title :titleText='titleText'></Title>
-    <Form :formData='formData' :uidInfoData='uidInfoData' :plaformList='plaformList'/>
+    <Form :formData='formData' :uidInfoData='uidInfoData' :vipInfoData='vipInfoData'/>
   </div>
 </template>
 
@@ -13,7 +13,7 @@ import Form from 'components/form-info/form'
 export default {
   data() {
     return {
-      plaformList:[],
+      vipInfoData:null,
       titleText: '体验师详情/',
       uid: window.vipUid,
       uidInfoData: {},
@@ -91,7 +91,6 @@ export default {
   created() {
     //获取体验师详情
     this.GetVipUserInfo()
-    // this.getFormData()
   },
   methods: {
     //获取体验师详情
@@ -100,12 +99,12 @@ export default {
               method: 'get',
               url: '/admin/vip/GetVipUserInfo',
               params:{
-                  id:42
+                  id:window.vipUid
               }
           })
           .then((res)=>{
-              let resData=res.data.result.data;
-             
+            if(res.data.resultCode==0){
+            let resData=res.data.result.data;
              let formData = {}
               Object.keys(this.formData).forEach(item=>{
                 if(resData[item]){
@@ -120,46 +119,14 @@ export default {
                   formData[item]=this.formData[item]
                 }
               })
-              console.log(formData);
-              // if(!resData.ability){
-              //   resData.ability= {
-              //                     cooperate:{
-              //                       synchronize:'',
-              //                       revision_title:'',
-              //                       submit_blog:''
-              //                     },
-              //                       professionalism:{
-              //                           original:'',
-              //                           area_title:'',
-              //                           area_content:'',
-              //                       },
-              //                       photography:{
-              //                       technology:'',
-              //                       device:'',
-              //                       },
-              //                       camera:{
-              //                       technology:'',
-              //                       device:'',
-              //                       }
-              //                   }
-              // }
               this.formData=formData;
-              this.plaformList=res.data.result.plaform;
-              console.log(this.formData.influence);
+              this.vipInfoData=res.data.result;
+              this.titleText=`编辑信息/ ${this.formData.username}`;
+            }else{
+              this.$message.error(res.data.errorMsg);
+            }
           })
       },
-      getFormData() {
-    //   // const vip_user = window.vip_user
-    //   // this.formData = window.vip_user;
-    //   this.uidInfoData = {
-    //     // groupname: vip_user.jiguo_groupname,
-    //     // blog_avg_time: vip_user.blog_avg_time,
-    //     // blog_avg_score: vip_user.blog_avg_score,
-    //     // win_num: vip_user.win_num,
-    //     // apply_num: vip_user.apply_num
-    //   }
-      this.titleText = `编辑信息/${this.formData.username}`
-    }
   },
   components: {
     Title,
