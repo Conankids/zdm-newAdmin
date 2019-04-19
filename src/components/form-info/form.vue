@@ -9,18 +9,18 @@
             <el-form-item label="性别">
                 <el-select v-model="form.sex" placeholder="请选择性别" style="width:260px;">
                     <el-option label="暂无" value="0">暂无</el-option>
-                    <el-option label="女" value="1">女</el-option>                    
+                    <el-option label="女" value="1">女</el-option>
                     <el-option label="男" value="2">男</el-option>
                 </el-select>
             </el-form-item>
             <el-form-item label="出生日期" prop="birthday">
                 <el-date-picker type="date" placeholder="选择日期" v-model="form.birthday" @change="getBirthday" style="width:260px;"></el-date-picker>
             </el-form-item>
-                
+
              <el-form-item label="年龄">
                 <el-input v-model="form.age" placeholder="请输入年龄" style="width:260px;"></el-input>
             </el-form-item>
-          
+
             <el-form-item label="公司" prop="company">
                 <el-input v-model="form.company" placeholder="请输入公司信息" style="width:260px;"></el-input>
             </el-form-item>
@@ -71,7 +71,7 @@
             </el-select>
         </el-form-item>
     </BlockBox>
-    
+
     <!-- 影响力 -->
       <BlockBox :blockTitle='`渠道信息`'>
         <div class="bbtd platform-item space-btn" v-for='(item,index) in form.influence' :key='index'>
@@ -84,7 +84,7 @@
                     @change="platformChange(index)">
                 </el-cascader>
             </el-form-item>
-           
+
             <el-form-item label="地址/账号名">
                 <el-input v-model="item.address" placeholder="请输入地址/账号名" style="width:260px;"></el-input>
             </el-form-item>
@@ -180,7 +180,7 @@
             <el-input v-model="form.pet_info" placeholder="描述一下宠物信息吧~" style="width:480px;margin-left:62px;"></el-input>
         </el-form-item>
     </BlockBox>
-  
+
      <!-- 能力体现 -->
      <BlockBox :blockTitle='`能力体现`'>
      <el-row class="title-show">
@@ -188,7 +188,7 @@
     </el-form-item>
     </el-row>
     <el-form-item>
-    
+
       <el-checkbox label="外围渠道能否同步" @change="countNum" v-model="formData.ability.cooperate.synchronize" true-label='1' false-label='0' name="type"></el-checkbox>
       <el-checkbox label="改稿件和标题" @change="countNum" v-model="formData.ability.cooperate.revision_title" true-label='1' false-label='0' name="type"></el-checkbox>
       <el-checkbox label="按时交稿、按要求改稿" @change="countNum" v-model="formData.ability.cooperate.submit_blog" true-label='1' false-label='0' name="type"></el-checkbox>
@@ -203,7 +203,7 @@
       <el-checkbox label="相关邻域的职业" @change="countNum" v-model="formData.ability.professionalism.area_title" true-label='1' false-label='0' name="type"></el-checkbox>
       <el-checkbox label="跨领域的合作内容产出质量" @change="countNum" v-model="formData.ability.professionalism.area_content" true-label='1' false-label='0' name="type"></el-checkbox>
     </el-form-item>
-    
+
      <el-row class="title-show">
      <el-form-item label="摄影水平（一个选项一分、总共2分）"  label-width="300px">
     </el-form-item>
@@ -221,11 +221,11 @@
       <el-checkbox label="视频拍摄及剪辑能力" @change="countNum" v-model="formData.ability.camera.technology" true-label='1' false-label='0' name="type"></el-checkbox>
       <el-checkbox label="专业的拍摄设备情况"  @change="countNum" v-model="formData.ability.camera.device" true-label='1' false-label='0' name="type"></el-checkbox>
     </el-form-item>
-    
+
 
     </BlockBox>
       <div class="tc sub-box">
-      </div> 
+      </div>
     <div class="footer" v-if="vipInfoData">
     <div class="footer-other" v-if="(vipInfoData.data.type=='1'&&vipInfoData.data.status=='2')">
     <el-button style="width:180px;" type="primary" @click="SubmitToVipCheck()" :loading="submitLoading">打回到体验师审核</el-button>
@@ -257,7 +257,7 @@ export default {
     props: {
         formData: {
             type: Object,
-            default: null   
+            default: null
         },
          vipInfoData: {
             type:Object,
@@ -382,12 +382,12 @@ export default {
                     label: '200平米以上'
                 }]
             },
-          
-          
+
+
         }
     },
     computed: {
-        
+
     },
     created () {
         this.initFormData()
@@ -420,7 +420,7 @@ export default {
                 url: '/admin/vip/GetAllArea',
             })
             .then((res)=>{
-              if(res.data.resultCode==0){            
+              if(res.data.resultCode==0){
               this.initAllArea=res.data.result;
               }else{
                  this.$message.error(res.data.errorMsg);
@@ -442,7 +442,7 @@ export default {
              if(res.data.resultCode==0){
               this.$message.success(res.data.errorMsg);
                     setTimeout(function () {
-                    window.location.href='/admin/GetVipUserCheckList?status=2'
+                    window.location.href='/admin/vip/GetVipUserCheckList?status=2'
                     }, 500)
               }else{
                   this.$message.error(res.data.errorMsg);
@@ -454,7 +454,7 @@ export default {
             this.$refs[formName].validate((valid) => {
                 if (valid) {
                 let data=qs.stringify({data:this.form,id:window.vipUid});
-                 this.submitLoading=true;            
+                 this.submitLoading=true;
                     this.$http({
                         method: 'post',
                         url: '/admin/vip/PassEditVipUserInfo',
@@ -464,11 +464,11 @@ export default {
                         },
                         data:data
                     }).then(res => {
-                       this.submitLoading=false; 
+                       this.submitLoading=false;
                        if(res.data.resultCode==0){
                           this.$message.success(res.data.errorMsg)
                                setTimeout(function () {
-                               window.location.href='/admin/GetVipUserCheckList?status=2'
+                               window.location.href='/admin/vip/GetVipUserCheckList?status=2'
                                 }, 500)
                           }else{
                             this.$message.error(res.data.errorMsg);
@@ -538,7 +538,7 @@ export default {
             this.$refs[formName].validate((valid) => {
                 if (valid) {
                 let data=qs.stringify({data:this.form,id:window.vipUid});
-                    this.submitLoading=true; 
+                    this.submitLoading=true;
                     this.$http({
                         method: 'post',
                         url: '/admin/vip/EditVipUserInfo',
@@ -548,11 +548,15 @@ export default {
                         },
                         data:data
                     }).then(res => {
-                        this.submitLoading=false; 
+                        this.submitLoading=false;
                         if(res.data.resultCode==0){
                           this.$message.success(res.data.errorMsg)
+                          let targetUrl = '/admin/vip/GetVipUserList'
+                          if(this.vipInfoData.data.status==1){
+                            targetUrl = '/admin/vip/GetVipUserCheckList?status=1'
+                          }
                             setTimeout(function () {
-                                 window.location.href='/admin/vip/GetVipUserList'
+                                 window.location.href=targetUrl
                             }, 500)
                           }else{
                             this.$message.error(res.data.errorMsg);
@@ -625,7 +629,7 @@ export default {
     .footer-other{
         margin-top: 20px;
     }
-    
+
 }
 
 </style>
