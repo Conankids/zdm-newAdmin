@@ -40,8 +40,8 @@
             </el-form-item>
             <el-form-item label="体验师类型" prop="vip_type">
                     <el-select v-model="form.vip_type" placeholder="选择体验师类型" style="width:260px;">
-                        <el-option label="首席体验师" value="2"></el-option>
-                        <el-option label="见习体验师" value="3"></el-option>
+                        <el-option label="体验师" value="2"></el-option>
+                        <el-option label="首席体验师" value="3"></el-option>
                     </el-select>
             </el-form-item>
             <el-form-item label="个人介绍" prop="userinfo">
