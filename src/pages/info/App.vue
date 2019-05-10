@@ -28,6 +28,14 @@ export default {
         position: '',
         tel: '',
         weixin: '',
+        //身份证号
+        id_card:'',
+        //地址
+        province:'',
+        city:'',
+        address:'',
+        //合同号
+        contract_no:'',
         //用户介绍
         userinfo:'',
         //体验师类型

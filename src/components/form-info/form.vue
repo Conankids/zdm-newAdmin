@@ -39,6 +39,19 @@
                         <el-option label="首席体验师" value="3"></el-option>
                     </el-select>
             </el-form-item>
+
+            <el-form-item label="身份证号:">
+                <el-input v-model="form.id_card" placeholder="请输入你的身份证号" style="width:260px;"></el-input>
+            </el-form-item>
+            
+            <el-form-item label="地址">
+                <el-cascader  expand-trigger="hover" :options="options" @change="handleChange" :value="addressCode" style="width:260px;"></el-cascader>
+            </el-form-item>
+
+            <el-form-item label="详细地址:">
+                <el-input v-model="form.address" placeholder="请输入你的详细地址" style="width:260px;"></el-input>
+            </el-form-item>
+            
             <el-form-item label="个人介绍" prop="userinfo">
                 <el-input type="textarea" :rows='3' v-model="form.userinfo" placeholder="请输入个人介绍" style="width:708px;"></el-input>
             </el-form-item>
@@ -216,9 +229,15 @@
       <el-checkbox label="视频拍摄及剪辑能力" @change="countNum" v-model="formData.ability.camera.technology" true-label='1' false-label='0' name="type"></el-checkbox>
       <el-checkbox label="专业的拍摄设备情况"  @change="countNum" v-model="formData.ability.camera.device" true-label='1' false-label='0' name="type"></el-checkbox>
     </el-form-item>
-
-
     </BlockBox>
+    <!-- 影响力 -->
+    <!-- 合同编号 -->
+    <BlockBox :blockTitle='`合同编号`'>
+       <el-form-item label="合同编号：">
+                <el-input v-model="form.contract_no" placeholder="请输入合同编号" style="width:708px"></el-input>
+            </el-form-item>
+    </BlockBox>
+
       <div class="tc sub-box">
       </div>
     <div class="footer" v-if="vipInfoData">
@@ -261,6 +280,7 @@ export default {
     },
     data () {
         return {
+            form:{},
             //添加loading
             submitLoading:false,
             //所有的领域数据
@@ -270,6 +290,7 @@ export default {
             //vip数据信息
             uidInfo: {},
             platform:[],
+            options: provinceAndCityData,
             rules: {
                 username: [{
                     required: true,
@@ -382,7 +403,47 @@ export default {
         }
     },
     computed: {
-
+         addressCode () {
+            const addressCodeArr = []
+            let masterProvince = ''
+            let masterCity = ''
+            //处理地域(标准化省市地区名)
+            if (this.form.province) {
+                addressCodeArr.push(TextToCode[this.form.province].code)
+                if ('台湾省'.indexOf(this.form.province) == -1) {
+                    addressCodeArr.push(TextToCode[this.form.province][this.form.city].code)
+                }
+            } else if (this.form.city) {
+                if ('台湾省'.indexOf(this.form.city) > -1) {
+                    //对台湾省(没有市)进行单独处理
+                    masterProvince = '台湾省'
+                    this.form.province = masterProvince
+                    this.form.city = masterCity
+                    addressCodeArr.push(TextToCode[this.form.province].code)
+                } else {
+                    for (var i in provinceAndCityData) {
+                        const cityList = provinceAndCityData[i].children
+                        let breakFlag = false
+                        for (var j in cityList) {
+                            if (cityList[j].label.indexOf(this.form.city) > -1) {
+                                masterProvince = provinceAndCityData[i].label
+                                masterCity = cityList[j].label
+                                breakFlag = true
+                                break
+                            }
+                        }
+                        if (breakFlag) break
+                    }
+                    if (masterProvince && masterCity) {
+                        this.form.province = masterProvince
+                        this.form.city = masterCity
+                        addressCodeArr.push(TextToCode[this.form.province].code)
+                        addressCodeArr.push(TextToCode[this.form.province][this.form.city].code)
+                    }
+                }
+            }
+            return addressCodeArr
+        },
     },
     created () {
         this.initFormData()
@@ -392,6 +453,7 @@ export default {
          this.GetAllArea()
          //发送总分数据
          this.initTotal();
+        
     },
     methods: {
         //获取平台所有信息方法
@@ -480,6 +542,14 @@ export default {
         })
          this.platform=arr;
         },
+        //遍历数据
+        influenceMap(){
+        let arr=[];
+         this.form.influence.map((item)=>{
+         arr.push([item.f_platform_id,item.platform_id])
+        })
+         this.platform=arr;
+        },
         initFormData () {
             this.form = this.formData
             this.initTotal();
@@ -503,6 +573,14 @@ export default {
 	        var birthday = year + spaceMark + month + spaceMark + today;
 	        this.form.birthday=birthday;
         },
+        //地址调试
+        handleChange (value) {
+            const addressCodeArr = [...value]
+            //转换地址
+            this.form.province = CodeToText[addressCodeArr[0]]
+            this.form.city = CodeToText[addressCodeArr[1]]
+        },
+       
         //添加平台信息
         addPlatform () {
             this.form.influence.push(platform_item())
@@ -568,7 +646,7 @@ export default {
     },
     watch: {
         formData (val) {
-                this.initFormData()
+                this.initFormData();
                 this.influenceMap();
         }
     }

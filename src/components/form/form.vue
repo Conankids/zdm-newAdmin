@@ -16,7 +16,7 @@
                 <el-date-picker type="date" placeholder="选择日期" v-model="form.birthday" style="width:260px;"></el-date-picker>
             </el-form-item>
             <el-form-item label="地域">
-                <el-cascader  expand-trigger="hover" :options="options" :value="addressCode" @change="handleChange" style="width:260px;"></el-cascader>
+                <el-cascader  expand-trigger="hover" :options="options"  @change="handleChange"  :value='addressCode' style="width:260px;"></el-cascader>
             </el-form-item>
             <el-form-item label="从事行业">
                 <el-input v-model="form.job" placeholder="请输入从事行业" style="width:260px;"></el-input>
@@ -797,7 +797,6 @@ export default {
         submitForm (formName) {
             this.$refs[formName].validate((valid) => {
                 if (valid) {
-                    console.log(qs.stringify(this.form));
                     this.$http({
                         method: 'post',
                         url: '/admin/vip/InsertUser',
